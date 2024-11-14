@@ -53,6 +53,15 @@ public class Startup
                 c.IncludeXmlComments(xmlPath);
             }
         });
+
+        // Các dịch vụ khác
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowLocalhost", builder =>
+                builder.WithOrigins("http://localhost:5173") // Thêm nguồn frontend cho phép
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,6 +90,8 @@ public class Startup
   });
 
         app.UseHttpsRedirection();
+
+        app.UseCors("AllowLocalhost"); // Sử dụng chính sách CORS
 
         app.UseRouting();
 
