@@ -5,6 +5,7 @@ import {
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const { Header, Content, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -25,31 +26,31 @@ const Sidebar = () => {
                 style={{ height: '100%', borderRight: 0 }}
             >
                 <Menu.Item key='1' icon={<HomeOutlined />}>
-                    Nhà hàng
+                    <Link to='/'>Home</Link>
                 </Menu.Item>
                 <Menu.Item key='2' icon={<UserOutlined />}>
-                    Quyền
+                    <Link to='/role'>Quyền</Link>
                 </Menu.Item>
                 <Menu.Item key='3' icon={<AppstoreAddOutlined />}>
-                    Tình Trạng
+                    <Link to='/status'>Quyền</Link>
                 </Menu.Item>
                 <Menu.Item key='4' icon={<AppstoreAddOutlined />}>
-                    Khu vực
+                    <Link to='/location'>Khu vực</Link>
                 </Menu.Item>
                 <Menu.Item key='5' icon={<AppstoreAddOutlined />}>
-                    Đơn vị
+                    <Link to='/unit'>Đơn vị</Link>
                 </Menu.Item>
                 <Menu.Item key='6' icon={<AppstoreAddOutlined />}>
-                    Thể loại
+                    <Link to='/category'>Thể loại</Link>
                 </Menu.Item>
                 <Menu.Item key='7' icon={<UserOutlined />}>
-                    Nhân sự
+                    <Link to='/staff'>Nhân sự</Link>
                 </Menu.Item>
                 <Menu.Item key='8' icon={<AppstoreAddOutlined />}>
-                    Bàn ăn
+                    <Link to='/table'>Bàn ăn</Link>
                 </Menu.Item>
                 <Menu.Item key='9' icon={<AppstoreAddOutlined />}>
-                    Thức ăn
+                    <Link to='/item'>Thức ăn</Link>
                 </Menu.Item>
             </Menu>
         </Sider>
