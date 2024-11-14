@@ -1,6 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using QLNH_Web_APIs.Data;
+
 
 public class Startup
 {
@@ -11,57 +26,59 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    // Phương thức này được gọi bởi runtime để thêm các dịch vụ vào container.
+    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
+{
+    string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
+    services.AddDbContextPool<ApplicationDbContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
+
+    services.AddControllers();
+
+    services.AddSwaggerGen(c =>
     {
-        // Cấu hình kết nối đến MySQL
-        var connectionString = Configuration.GetConnectionString("DefaultConnection");
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-            
-        // Cấu hình Swagger
-        services.AddSwaggerGen(options =>
+        c.SwaggerDoc("v1", new OpenApiInfo
         {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Version = "v1",
-                Title = "QLNH Web APIs",
-                Description = "API documentation for QLNH",
-                TermsOfService = new Uri("https://example.com/terms")
-            });
+            Version = "v1",
+            Title = "Test API",
+            Description = "ASP.NET Core Web API"
         });
 
-        // Cấu hình cho API Endpoints
-        services.AddEndpointsApiExplorer();
-    }
+        // Cấu hình Swagger để sử dụng tệp XML
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-    // Phương thức này được gọi bởi runtime để định cấu hình pipeline HTTP.
-    // public void Configure(WebApplication app, IWebHostEnvironment env)
-    // {
-    //     if (env.IsDevelopment())
-    //     {
-    //         app.UseSwagger();
-    //         app.UseSwaggerUI();
-    //     }
+        // Kiểm tra tệp XML tồn tại và thêm vào Swagger
+        if (File.Exists(xmlPath))
+        {
+            c.IncludeXmlComments(xmlPath);
+        }
+    });
+}
 
-    //     app.UseHttpsRedirection();
-    // }
-
-    // Phương thức này được gọi bởi runtime để định cấu hình pipeline HTTP.
-    public void Configure(WebApplication app, IWebHostEnvironment env)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
         {
-            // Kích hoạt Swagger và Swagger UI
-            app.UseSwagger();
-            app.UseSwaggerUI(options =>
-            {
-                // Đặt Swagger UI tại đường dẫn gốc
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "QLNH Web APIs v1");
-                options.RoutePrefix = string.Empty; // Swagger UI sẽ mở tại / (root URL)
-            });
+            app.UseDeveloperExceptionPage();
         }
 
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("../swagger/v1/swagger.json", "Test API V1");
+        });
+
         app.UseHttpsRedirection();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 }
+
