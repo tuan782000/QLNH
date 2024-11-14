@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace QLNH_Web_APIs.Models
 {
-    public class Category : Base 
-    {
-        public int parentId { get; set; } // phân nhánh categories
+    public class OrderItem : Base { 
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool Voided { get; set; }
+        public double SalePrice { get; set; }
+        public virtual Item Item { get; set; }
     }
 }
