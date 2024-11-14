@@ -28,32 +28,32 @@ public class Startup
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
-{
-    string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
-    services.AddDbContextPool<ApplicationDbContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
-
-    services.AddControllers();
-
-    services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo
+        string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
+        services.AddDbContextPool<ApplicationDbContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
+
+        services.AddControllers();
+
+        services.AddSwaggerGen(c =>
         {
-            Version = "v1",
-            Title = "Test API",
-            Description = "ASP.NET Core Web API"
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Version = "v1",
+                Title = "Test API",
+                Description = "ASP.NET Core Web API"
+            });
+
+            // Cấu hình Swagger để sử dụng tệp XML
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+            // Kiểm tra tệp XML tồn tại và thêm vào Swagger
+            if (File.Exists(xmlPath))
+            {
+                c.IncludeXmlComments(xmlPath);
+            }
         });
-
-        // Cấu hình Swagger để sử dụng tệp XML
-        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-
-        // Kiểm tra tệp XML tồn tại và thêm vào Swagger
-        if (File.Exists(xmlPath))
-        {
-            c.IncludeXmlComments(xmlPath);
-        }
-    });
-}
+    }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -64,10 +64,21 @@ public class Startup
         }
 
         app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("../swagger/v1/swagger.json", "Test API V1");
-        });
+        // app.UseSwaggerUI(c =>
+        // {
+        //     c.SwaggerEndpoint("../swagger/v1/swagger.json", "Test API V1");
+        // });
+
+        app.UseSwaggerUI(options =>
+  {
+      // Chỉ định endpoint Swagger JSON
+      options.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");
+
+      // Đặt Swagger UI tại đường dẫn bạn muốn
+      options.RoutePrefix = "swagger";  // Nếu muốn giữ nguyên "swagger" như URL
+                                        // Hoặc thay đổi thành một đường dẫn tùy chỉnh
+      options.RoutePrefix = string.Empty; // Swagger UI sẽ mở tại / (root URL)
+  });
 
         app.UseHttpsRedirection();
 

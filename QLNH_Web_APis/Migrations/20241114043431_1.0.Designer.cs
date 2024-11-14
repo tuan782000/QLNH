@@ -11,7 +11,7 @@ using QLNH_Web_APIs.Data;
 namespace QLNH_Web_APis.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241114035715_1.0")]
+    [Migration("20241114043431_1.0")]
     partial class _10
     {
         /// <inheritdoc />
@@ -23,6 +23,27 @@ namespace QLNH_Web_APis.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("QLNH_Web_APIs.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
 
             modelBuilder.Entity("QLNH_Web_APIs.Models.Item", b =>
                 {

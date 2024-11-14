@@ -7,11 +7,11 @@ namespace QLNH_Web_APIs.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class ItemController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         // constructor
-        public UserController(ApplicationDbContext context)
+        public ItemController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -19,9 +19,9 @@ namespace QLNH_Web_APIs.Controllers
         // API GET - Trả về danh sách người dùng
         // IEnumerable<T>
         [HttpGet]
-        public IEnumerable<User> Get()
+        public IEnumerable<Item> Get()
         {
-            return _context.Users.ToList();
+            return _context.Items.ToList();
         }
     }
 }
