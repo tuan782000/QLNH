@@ -32,7 +32,7 @@ const Sidebar = () => {
                     <Link to='/role'>Quyền</Link>
                 </Menu.Item>
                 <Menu.Item key='3' icon={<AppstoreAddOutlined />}>
-                    <Link to='/status'>Quyền</Link>
+                    <Link to='/status'>Trạng Thái</Link>
                 </Menu.Item>
                 <Menu.Item key='4' icon={<AppstoreAddOutlined />}>
                     <Link to='/location'>Khu vực</Link>
@@ -51,6 +51,9 @@ const Sidebar = () => {
                 </Menu.Item>
                 <Menu.Item key='9' icon={<AppstoreAddOutlined />}>
                     <Link to='/item'>Thức ăn</Link>
+                </Menu.Item>
+                <Menu.Item key='10' icon={<AppstoreAddOutlined />}>
+                    <Link to='/restaurant'>Nhà hàng</Link>
                 </Menu.Item>
             </Menu>
         </Sider>

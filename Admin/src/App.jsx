@@ -7,6 +7,7 @@ import {
     Category,
     Item,
     Location,
+    Restaurant,
     Role,
     Staff,
     Status,
@@ -47,6 +48,10 @@ const App = () => {
                                 <Route path='/staff' element={<Staff />} />
                                 <Route path='/table' element={<Table />} />
                                 <Route path='/item' element={<Item />} />
+                                <Route
+                                    path='/restaurant'
+                                    element={<Restaurant />}
+                                />
                                 {/* Add more routes here */}
                             </Routes>
                         </Content>
