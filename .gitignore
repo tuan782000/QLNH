@@ -1,0 +1,63 @@
+## .NET Core
+
+# User-specific files
+.idea/
+.vscode/
+
+# Windows installer files
+Thumbs.db
+ehthumbs.db
+
+# .NET Core Build Folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# ASP.NET temporary files
+wwwroot/
+properties/
+
+# DotCover (JetBrains)
+.idea/.idea/
+
+# JetBrains Rider
+.idea/
+
+# npm package folder
+node_modules/
+
+# VS for Mac Config folder
+.vscode/
+
+# Microsoft Azure Web App config folder
+.publish/
+
+# ASP.NET MVC & Core temporary files
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+
+# Logs and backups
+logs/
+*.log
+
+# Environment files
+.env
+
+# .NET Core global tool folder
+.dotnet/
+
+# SQLite and database files
+*.sqlite
+*.db
