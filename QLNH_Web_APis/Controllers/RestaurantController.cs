@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QLNH_Web_APIs.Data;
+using QLNH_Web_APIs.DTOs;
 using QLNH_Web_APIs.Models;
+using AutoMapper;
+
 
 namespace QLNH_Web_APIs.Controllers
 {
@@ -10,10 +14,13 @@ namespace QLNH_Web_APIs.Controllers
     public class RestaurantController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
         // constructor
-        public RestaurantController(ApplicationDbContext context)
+        public RestaurantController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // API GET - Trả về danh sách người dùng
@@ -22,11 +29,39 @@ namespace QLNH_Web_APIs.Controllers
         /// Danh sách các nhà hàng
         /// </summary>
         /// <returns></returns>
+        // [HttpGet]
+        // public IEnumerable<Restaurant> Get()
+        // {
+        //     return _context.Restaurants
+        //                     .Where(c => !c.Deleted) // c.Deleted - lấy ra các cái có Deleted là true - nghịch đảo true là false thì - ẩn các restaurant có Deleted là true
+        //                     .Include(r => r.CreatedUser) // 2 cái này làm được nhờ vitural
+        //                     .Include(r => r.UpdatedUser)
+        //                     .ToList();
+        // }
         [HttpGet]
-        public IEnumerable<Restaurant> Get()
+        public async Task<ActionResult<IEnumerable<RestaurantDTO>>> Get()
         {
-            return _context.Restaurants.Where(r => r.Deleted == false).ToList();
+            try
+            {
+                var data = await _context.Restaurants
+                                .Include(r => r.CreatedUser)
+                                .Include(r => r.UpdatedUser)
+                                .ToArrayAsync();
+                var model = _mapper.Map<IEnumerable<RestaurantDTO>>(data);
+                return new JsonResult(model);
+            }
+            catch (AggregateException ex)
+            {
+                return BadRequest("Not good");
+            }
         }
+
+        /*
+            Mình bổ sung using Mapper và sử dụng mapper 17, 20, 23 mới dùng _mapper
+            Hàm Get này áp dụng async và await và bỏ sung them Task<ActionResult<>>
+            Thay vì dùng cái ruột IEnumerable<Restaurant> thay bằng ruột <IEnumerable<RestaurantDTO> để người khác chỉ xem được <IEnumerable<RestaurantDTO>
+            giấu các thông tin IEnumerable<Restaurant> 
+        */
 
         /// <summary>
         /// Thêm restaurant mới
@@ -35,6 +70,12 @@ namespace QLNH_Web_APIs.Controllers
         [HttpPost]
         public Restaurant Post([FromBody] Restaurant Restaurant)
         {
+            // Restaurant client gủi lên 
+            // và các cái mà mình thực hiện query - những thứ user không được biết
+            var createdUser = _context.Users.Find(Restaurant.CreatedUser.Id);
+            Restaurant.CreatedUser = createdUser;
+            var updatedUser = _context.Users.Find(Restaurant.UpdatedUser.Id);
+            Restaurant.UpdatedUser = updatedUser;
             // Gán thời gian tạo và cập nhật là thời gian hiện tại
             Restaurant.Created = DateTime.Now;
             Restaurant.Updated = DateTime.Now;
@@ -74,19 +115,53 @@ namespace QLNH_Web_APIs.Controllers
             if (!string.IsNullOrEmpty(restaurant.Address))
                 existingRestaurant.Address = restaurant.Address;
 
+            var updatedUser = _context.Users.Find((restaurant.UpdatedUser != null) ? restaurant.UpdatedUser.Id : 1);
+            restaurant.UpdatedUser = updatedUser;
+
             _context.SaveChanges();
             return Ok(existingRestaurant);
         }
 
+        // /// <summary>
+        // /// Lấy Restaurant với id
+        // /// </summary>
+        // /// <param name="id">Tham số id của Restaurant</param>
+        // /// <returns>1 Restaurant</returns>
+        // [HttpGet("Id")]
+        // public Restaurant GetById([FromQuery] int id)
+        // {
+        //     return _context.Restaurants.Where(Restaurant => Restaurant.Id == id && Restaurant.Deleted == false).FirstOrDefault(); // tìm id = id truyền vào - trả về (1) thằng đầu tiên tìm được
+        // }
         /// <summary>
-        /// Lấy Restaurant với id
+        /// Lấy thông tin nhà hàng theo ID.
         /// </summary>
-        /// <param name="id">Tham số id của Restaurant</param>
-        /// <returns>1 Restaurant</returns>
-        [HttpGet("Id")]
-        public Restaurant GetById([FromQuery] int id)
+        /// <param name="id">ID của nhà hàng cần tìm.</param>
+        /// <returns>Thông tin nhà hàng hoặc mã lỗi nếu không tìm thấy.</returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<RestaurantDTO>>> GetByIdAsync(int id)
         {
-            return _context.Restaurants.Where(Restaurant => Restaurant.Id == id && Restaurant.Deleted == false).FirstOrDefault(); // tìm id = id truyền vào - trả về (1) thằng đầu tiên tìm được
+            try
+            {
+                var restaurant = await _context.Restaurants
+                                    .Include(r => r.CreatedUser)
+                                    .Include(r => r.UpdatedUser)
+                                    .Where(r => r.Id == id && r.Deleted == false)
+                                    .FirstOrDefaultAsync();
+
+                if (restaurant == null)
+                {
+                    return NotFound($"Không tìm thấy nhà hàng với ID = {id}.");
+                }
+
+                // Ánh xạ sang DTO
+                var restaurantDto = _mapper.Map<RestaurantDTO>(restaurant);
+                return Ok(restaurantDto);
+            }
+            catch (Exception ex)
+            {
+                // Ghi log lỗi nếu cần thiết
+                return StatusCode(500, "Đã xảy ra lỗi khi truy vấn dữ liệu.");
+            }
         }
 
         /// <summary>

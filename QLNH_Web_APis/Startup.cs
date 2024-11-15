@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using QLNH_Web_APIs.Data;
+using QLNH_Web_APIs.Mappings;
 
 
 public class Startup
@@ -31,6 +33,15 @@ public class Startup
     {
         string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
         services.AddDbContextPool<ApplicationDbContext>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
+
+        // Auto Mapper Configurations
+        var mapperConfig = new MapperConfiguration(mc =>
+        {
+            mc.AddProfile(new MappingProfile());
+        });
+
+        IMapper mapper = mapperConfig.CreateMapper();
+        services.AddSingleton(mapper);
 
         services.AddControllers();
 
@@ -58,7 +69,8 @@ public class Startup
         services.AddCors(options =>
         {
             options.AddPolicy("AllowLocalhost", builder =>
-                builder.WithOrigins("http://localhost:5173") // Thêm nguồn frontend cho phép
+                //builder.WithOrigins("http://localhost:5173") // Thêm nguồn frontend cho phép
+                builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod());
         });

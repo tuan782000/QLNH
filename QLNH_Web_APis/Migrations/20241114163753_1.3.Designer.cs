@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QLNH_Web_APIs.Data;
 
@@ -11,9 +12,11 @@ using QLNH_Web_APIs.Data;
 namespace QLNH_Web_APis.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114163753_1.3")]
+    partial class _13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,15 +66,8 @@ namespace QLNH_Web_APis.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("CreatedUserId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("tinyint(1)");
@@ -80,30 +76,17 @@ namespace QLNH_Web_APis.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Name")
+                        .HasColumnType("int");
 
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RestaurantId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("UpdatedUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.HasIndex("UpdatedUserId");
 
                     b.ToTable("Guests");
                 });
@@ -420,15 +403,10 @@ namespace QLNH_Web_APis.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RestaurantId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RestaurantId");
 
                     b.ToTable("Roles");
                 });
@@ -444,9 +422,6 @@ namespace QLNH_Web_APis.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("CreatedUserId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Deleted")
                         .HasColumnType("tinyint(1)");
 
@@ -458,22 +433,10 @@ namespace QLNH_Web_APis.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("RestaurantId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Updated")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("UpdatedUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedUserId");
-
-                    b.HasIndex("RestaurantId");
-
-                    b.HasIndex("UpdatedUserId");
 
                     b.ToTable("Statuses");
                 });
@@ -551,34 +514,9 @@ namespace QLNH_Web_APis.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("CreatedUserId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("OffDuty")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("UpdatedUserId")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -586,36 +524,7 @@ namespace QLNH_Web_APis.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("QLNH_Web_APIs.Models.Guest", b =>
-                {
-                    b.HasOne("QLNH_Web_APIs.Models.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLNH_Web_APIs.Models.Restaurant", "Restaurant")
-                        .WithMany()
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLNH_Web_APIs.Models.User", "UpdatedUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedUser");
-
-                    b.Navigation("Restaurant");
-
-                    b.Navigation("UpdatedUser");
                 });
 
             modelBuilder.Entity("QLNH_Web_APIs.Models.GuestTable", b =>
@@ -697,44 +606,6 @@ namespace QLNH_Web_APis.Migrations
                     b.Navigation("UpdatedUser");
                 });
 
-            modelBuilder.Entity("QLNH_Web_APIs.Models.Role", b =>
-                {
-                    b.HasOne("QLNH_Web_APIs.Models.Restaurant", "Restaurant")
-                        .WithMany()
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Restaurant");
-                });
-
-            modelBuilder.Entity("QLNH_Web_APIs.Models.Status", b =>
-                {
-                    b.HasOne("QLNH_Web_APIs.Models.User", "CreatedUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLNH_Web_APIs.Models.Restaurant", "Restaurant")
-                        .WithMany()
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QLNH_Web_APIs.Models.User", "UpdatedUser")
-                        .WithMany()
-                        .HasForeignKey("UpdatedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedUser");
-
-                    b.Navigation("Restaurant");
-
-                    b.Navigation("UpdatedUser");
-                });
-
             modelBuilder.Entity("QLNH_Web_APIs.Models.Unit", b =>
                 {
                     b.HasOne("QLNH_Web_APIs.Models.UnitType", "UnitType")
@@ -744,17 +615,6 @@ namespace QLNH_Web_APis.Migrations
                         .IsRequired();
 
                     b.Navigation("UnitType");
-                });
-
-            modelBuilder.Entity("QLNH_Web_APIs.Models.User", b =>
-                {
-                    b.HasOne("QLNH_Web_APIs.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("QLNH_Web_APIs.Models.Item", b =>
